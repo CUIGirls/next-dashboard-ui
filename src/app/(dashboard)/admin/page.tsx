@@ -7,7 +7,7 @@ import EventCalendar from "@/components/EventCalendar";
 import FinanceChart from "@/components/FinanceChart";
 import UserCard from "@/components/UserCard";
 import React, { FormEvent } from 'react';
-import withAuth from "@/components/isAuth";
+import { withAuth } from "@/components/isAuth";
 
 const AdminPage = () => {
   async function addPet(petName: string, ownerName: string): Promise<void> {
@@ -87,4 +87,4 @@ const PetForm: React.FC = () => {
   );
 };
 
-export default withAuth(AdminPage);
+export default withAuth(AdminPage, { roles: ['admin'] });

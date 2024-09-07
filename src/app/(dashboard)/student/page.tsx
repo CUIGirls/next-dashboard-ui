@@ -1,6 +1,7 @@
 import Announcements from "@/components/Announcements";
 import BigCalendar from "@/components/BigCalender";
 import EventCalendar from "@/components/EventCalendar";
+import { withAuth } from "@/components/isAuth";
 
 const StudentPage = () => {
   return (
@@ -21,4 +22,4 @@ const StudentPage = () => {
   );
 };
 
-export default StudentPage;
+export default withAuth(StudentPage, { roles: ["student", "admin"] });

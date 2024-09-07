@@ -1,5 +1,6 @@
 import Announcements from "@/components/Announcements";
 import BigCalendar from "@/components/BigCalender";
+import { withAuth } from "@/components/isAuth";
 
 const TeacherPage = () => {
   return (
@@ -19,4 +20,4 @@ const TeacherPage = () => {
   );
 };
 
-export default TeacherPage;
+export default withAuth(TeacherPage, { roles: ["teacher", "admin"] });
