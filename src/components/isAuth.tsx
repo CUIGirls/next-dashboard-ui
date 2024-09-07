@@ -1,25 +1,28 @@
-// components/withAuth.tsx
-import { useUser } from '@clerk/nextjs';
+"use client";
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useEffect } from 'react';
+// Import the loading component
 
-const withAuth = (WrappedComponent: React.FC) => {
-  const Wrapper: React.FC<{ children?: any }> = ({ children }) => {
-    const { isLoaded, isSignedIn } = useUser();
+const withAuth = (WrappedComponent: React.ComponentType) => {
+  const AuthenticatedComponent = (props: any) => {
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-      if (isLoaded && !isSignedIn) {
-        router.push('/sign-in');
+      const jwtToken = localStorage.getItem('jwtToken');
+
+      if (!jwtToken) {
+        router.push('/sign-in'); // Redirect to login page if not authenticated
+      } else {
+        setIsLoading(false); // Set loading to false if authenticated
       }
-    }, [isLoaded, isSignedIn, router]);
+    }, [router]);
 
-    if (!isLoaded || !isSignedIn) return <div>Loading...</div>; // Optional: Show loading state
 
-    return <WrappedComponent {...children} />;
+    return <WrappedComponent {...props} />;
   };
 
-  return Wrapper;
+  return AuthenticatedComponent;
 };
 
 export default withAuth;
