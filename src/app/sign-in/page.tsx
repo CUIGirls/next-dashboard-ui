@@ -1,107 +1,144 @@
 "use client";
-import Link from "next/link";
-import React, { useState } from "react";
-import "bootstrap-icons/font/bootstrap-icons.css";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
+import { jwtDecode } from 'jwt-decode'; 
 
-const Login: React.FC = () => {
+export default function LoginPage() {
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Add state for button disabled and loading
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    userName: "",
-    password: "",
-  });
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: any) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();
-    setIsSubmitting(true); // Disable button and show spinner
-
+    setError("");
+    setLoading(true);
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const response = await axios.post("/api/login", {
+        userName: userName,
+        password: password,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+      const token = response.data.token;
+
+      // Store the token in local storage
+      localStorage.setItem("jwtToken", token);
+      const decoded: { role: string } = jwtDecode(token);
+      if (decoded.role === "admin") {
+        router.push("/admin");
+      } else if (decoded.role === "teacher") {
+        router.push("/teacher");
+      } else if (decoded.role === "student") {
+        router.push("/student");
       }
 
-      const data = await response.json();
-    console.log('Login successful:', data.token);
-    localStorage.setItem('jwtToken', data.token);
-    } catch (error: any) {
-      console.error("Login Error:", error);
-      setErrorMessage(error.message); // Set error message
-      setIsSubmitting(false); // Re-enable button if there's an error
+
+      // Store the token using react-query
+      // const queryClient = useQueryClient();
+      // queryClient.setQueryData("token", token);
+
+      // You can also redirect the user to a new page or update the state
+    } catch (error) {
+      // Handle error response
+      setError("Invalid user name or password.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
+
+    setTimeout(() => {
+      if (!userName || !password) {
+        setError("User Name and Password are required.");
+      }
+      setLoading(false);
+    }, 2000);
   };
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
- 
   return (
-    <div className="sign-up-form bg-white rounded-2xl px-10 py-10 w-full max-w-lg h-auto lg:w-1/2 lg:h-3/4 mx-auto my-10">
-      <h1 className="mb-4 font-source-code text-3xl font-bold">Sign In</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="px-10">
-          <label className="block mb-2 font-light text-gray-400 text-sm">
-            userName
-            <input
-              className="w-full p-2 mb-4 border-b border-green-200 focus:bg-green-100 outline-none  sm:sm:border-green-200 sm:focus:bg-green-100 sm:outline-none sm:rounded-lg sm:p-3"
-              type="input"
-              name="email"
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label className="block mb-2 font-light text-gray-400 text-sm">
-            Password
-            <div className="relative">
-              <input
-                className="w-full p-2 mb-4 border-b border-green-200 focus:bg-green-100 outline-none  sm:sm:border-green-200 sm:focus:bg-green-100 sm:outline-none sm:rounded-lg sm:p-3"
-                type={isPasswordVisible ? "text" : "password"}
-                name="password"
-                onChange={handleChange}
-                required
-              />
-              <i
-                className={`bi ${
-                  isPasswordVisible ? "bi-eye" : "bi-eye-slash"
-                } custom-class absolute right-2 top-2 cursor-pointer`}
-                onClick={togglePasswordVisibility}
-              ></i>
-            </div>
-          </label>
-          <button
-            className="w-full p-3 rounded-3xl bg-[#65AD87] hover:bg-[#65AD87] text-white px-1 py-2 text-xs"
-            type="submit"
-            disabled={isSubmitting} // Disable button when submitting
+    <div className="min-h-screen flex flex-col items-center justify-center ">
+      <div className="flex w-full h-full">
+        {/* Left Side with blurred background */}
+        <div className="  h-screen">
+          <div
+            className="absolute inset-0 w-full bg-cover bg-center rounded-lg  shadow-xl"
+            style={{ backgroundImage: 'url("/new.png")' }}
           >
-            {isSubmitting ? (
-              <i className="bi bi-arrow-repeat animate-spin"></i> // Show spinner
-            ) : (
-              "Sign In"
-            )}
-          </button>
+            <div className="flex items-center justify-center  h-screen p-6 ">
+              <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md  mt-4 justify-center ">
+                <div className="flex items-center justify-center h-full">
+                  <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpep873i6dOdCCH9I6ZIOsB-MkDKmyI7zvYg&s"
+                    alt="School Logo"
+                    className="w-20 h-20 z-10 rounded-full " // Size of the logo can be adjusted
+                  />
+                </div>
+                <h1 className="text-2xl font-bold text-center text-orange-600 mb-6">
+                  Sign in to your portal
+                </h1>
+
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <label className="block text-gray-700">User ID</label>
+                    <input
+                      type="text"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600"
+                      placeholder="Enter your user ID"
+                    />
+                  </div>
+
+                  <div className="relative pb-4">
+                    <label className="block text-gray-700">Password</label>
+                    <input
+                      type={isPasswordVisible ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-9 right-3 "
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                      {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+
+                  <button
+                    type="submit"
+                    className="w-full bg-orange-600 text-white py-2 rounded-md focus:outline-none hover:bg-orange-700"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <span className="spinner-border animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      "Sign in"
+                    )}
+                  </button>
+
+                  {/* <div className="text-center mt-4">
+                <p>Don't have an account? <a href="#" className="text-orange-600 hover:underline">Sign Up now</a></p>
+              </div> */}
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-      </form>
+
+        {/* Right Side Login Form */}
+      </div>
     </div>
   );
-};
-
-export default Login;
+}

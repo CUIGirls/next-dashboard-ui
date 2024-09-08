@@ -1,6 +1,26 @@
-import { role } from "@/lib/data";
-import Image from "next/image";
-import Link from "next/link";
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { jwtDecode } from 'jwt-decode'; // Correctly import jwtDecode
+import { useEffect, useState } from 'react';
+
+// Function to get the role from JWT token in local storage
+const getRole = () => {
+  const token = localStorage.getItem('jwtToken');
+  
+  if (!token) {
+    return null; // Return null if no token is found
+  }
+
+  try {
+    const decoded: { role: string } = jwtDecode(token); // Decode the JWT token
+    return decoded.role; // Return the role from the token
+  } catch (error) {
+    console.error('Failed to decode JWT token:', error);
+    return null;
+  }
+};
 
 const menuItems = [
   {
@@ -118,6 +138,14 @@ const menuItems = [
 ];
 
 const Menu = () => {
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Set the role when the component mounts
+    const userRole = getRole();
+    setRole(userRole);
+  }, []);
+
   return (
     <div className="mt-4 text-sm">
       {menuItems.map((i) => (
@@ -126,7 +154,8 @@ const Menu = () => {
             {i.title}
           </span>
           {i.items.map((item) => {
-            if (item.visible.includes(role)) {
+            // Only render items visible to the user's role
+            if (role && item.visible.includes(role)) {
               return (
                 <Link
                   href={item.href}
@@ -138,6 +167,7 @@ const Menu = () => {
                 </Link>
               );
             }
+            return null;
           })}
         </div>
       ))}

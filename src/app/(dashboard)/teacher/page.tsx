@@ -1,3 +1,5 @@
+'use client'
+
 import Announcements from "@/components/Announcements";
 import BigCalendar from "@/components/BigCalender";
 import { withAuth } from "@/components/isAuth";
