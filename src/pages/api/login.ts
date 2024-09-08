@@ -11,27 +11,26 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { email, password } = req.body;
+  const { userName, password } = req.body;
 
-  if (!email || !password) {
+  if (!userName || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
   try {
     // Find the user in the database
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { userName } });
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     // Verify the password
-    const isMatch = true//await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-    console.log(user);
     const payload = {
         userId: user.id,
         role: user.role, // Ensure you're including the role here

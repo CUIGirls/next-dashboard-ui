@@ -9,7 +9,7 @@ const Login: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false); // Add state for button disabled and loading
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "",
+    userName: "",
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -60,10 +60,10 @@ const Login: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <div className="px-10">
           <label className="block mb-2 font-light text-gray-400 text-sm">
-            Email
+            userName
             <input
               className="w-full p-2 mb-4 border-b border-green-200 focus:bg-green-100 outline-none  sm:sm:border-green-200 sm:focus:bg-green-100 sm:outline-none sm:rounded-lg sm:p-3"
-              type="email"
+              type="input"
               name="email"
               onChange={handleChange}
               required
