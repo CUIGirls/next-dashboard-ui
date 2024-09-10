@@ -4,23 +4,24 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
 
-// USE LAZY LOADING
-
-// import TeacherForm from "./forms/TeacherForm";
-// import StudentForm from "./forms/StudentForm";
-
+// Lazy loading TeacherForm and StudentForm
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
+// Forms object with mappings for "teacher" and "student"
 const forms: {
   [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
 } = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />
+  student: (type, data) => <StudentForm type={type} data={data} />,
+  announcement: (type, data) => <AnnouncementForm type={type} data={data} />,
 };
 
 const FormModal = ({
@@ -57,20 +58,24 @@ const FormModal = ({
   const [open, setOpen] = useState(false);
 
   const Form = () => {
-    return type === "delete" && id ? (
-      <form action="" className="p-4 flex flex-col gap-4">
-        <span className="text-center font-medium">
-          All data will be lost. Are you sure you want to delete this {table}?
-        </span>
-        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
-          Delete
-        </button>
-      </form>
-    ) : type === "create" || type === "update" ? (
-      forms[table](type, data)
-    ) : (
-      "Form not found!"
-    );
+    if (type === "delete" && id) {
+      return (
+        <form action="" className="p-4 flex flex-col gap-4">
+          <span className="text-center font-medium">
+            All data will be lost. Are you sure you want to delete this {table}?
+          </span>
+          <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
+            Delete
+          </button>
+        </form>
+      );
+    }
+
+    if ((type === "create" || type === "update") && forms[table]) {
+      return forms[table](type, data); // Only render if the form exists in the forms object
+    }
+
+    return <span>Form not found for {table}!</span>; // Fallback for unsupported table types
   };
 
   return (

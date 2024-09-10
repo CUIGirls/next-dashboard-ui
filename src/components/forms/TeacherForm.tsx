@@ -5,6 +5,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "../InputField";
 import Image from "next/image";
+import ReactSelect from "react-select";
+import Select from "react-select";
+
+const listOptions = [
+  { value: "1", label: "Class 1" },
+  { value: "2", label: "Class 2" },
+  { value: "3", label: "Class 3" },
+  { value: "4", label: "Class 4" },
+];
 
 const schema = z.object({
   username: z
@@ -12,6 +21,7 @@ const schema = z.object({
     .min(3, { message: "Username must be at least 3 characters long!" })
     .max(20, { message: "Username must be at most 20 characters long!" }),
   email: z.string().email({ message: "Invalid email address!" }),
+  teacherId: z.string().min(1, { message: "Teacher ID is required!" }),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters long!" }),
@@ -19,11 +29,33 @@ const schema = z.object({
   lastName: z.string().min(1, { message: "Last name is required!" }),
   phone: z.string().min(1, { message: "Phone is required!" }),
   address: z.string().min(1, { message: "Address is required!" }),
-  bloodType: z.string().min(1, { message: "Blood Type is required!" }),
   birthday: z.date({ message: "Birthday is required!" }),
   sex: z.enum(["male", "female"], { message: "Sex is required!" }),
+  classes: z
+    .array(z.object({ value: z.string(), label: z.string() }))
+    .min(1, { message: "At least one class must be selected!" }),
+  sections: z.string().min(1, { message: "Section is required!" }),
+  subjects: z.string().min(1, { message: "Subjects are required!" }),
+  classIncharge: z.string().min(1, { message: "Class Incharge is required!" }),
   img: z.instanceof(File, { message: "Image is required" }),
 });
+
+// Usage in form handling
+const onSubmit = (data: any) => {
+  const parsedData = schema.parse(data); // Validate form data
+  console.log(parsedData); // Handle the validated data
+};
+const handleMultiSelectChange = (
+  name: string,
+  selectedOptions: { value: string; label: string }[]
+) => {
+  const values = selectedOptions.map((option) => option.value);
+  
+  
+};
+const handleSelectChange = (name: string, value: string) => {
+  console.log(name, value);
+};
 
 type Inputs = z.infer<typeof schema>;
 
@@ -42,12 +74,13 @@ const TeacherForm = ({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
-  });
+
+  function setValue(arg0: string, selectedOptions: { value: string; label: string; }[]) {
+    throw new Error("Function not implemented.");
+  }
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-8 h-[600px] p-7 overflow-y-auto scrollbar scrollbar-thumb-custom-green scrollbar-track-gray" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">Create a new teacher</h1>
       <span className="text-xs text-gray-400 font-medium">
         Authentication Information
@@ -68,6 +101,13 @@ const TeacherForm = ({
           error={errors?.email}
         />
         <InputField
+          label="Teacher ID"
+          name="teacherId"
+          defaultValue={data?.teacherId}
+          register={register}
+          error={errors?.email}
+        />
+        <InputField
           label="Password"
           name="password"
           type="password"
@@ -77,7 +117,7 @@ const TeacherForm = ({
         />
       </div>
       <span className="text-xs text-gray-400 font-medium">
-        Personal Information
+      Teacher Information
       </span>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
@@ -109,13 +149,6 @@ const TeacherForm = ({
           error={errors.address}
         />
         <InputField
-          label="Blood Type"
-          name="bloodType"
-          defaultValue={data?.bloodType}
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
           label="Birthday"
           name="birthday"
           defaultValue={data?.birthday}
@@ -124,7 +157,7 @@ const TeacherForm = ({
           type="date"
         />
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
+          <label className="text-xs text-gray-500">Gender</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("sex")}
@@ -139,14 +172,65 @@ const TeacherForm = ({
             </p>
           )}
         </div>
+        <div className="w-full">
+        <label className="text-xs text-gray-500">Classes</label>
+        <ReactSelect
+                  isMulti
+                  name='classes'
+                  options={listOptions}
+                  className="basic-multi-select custom-select"
+                  classNamePrefix="select"
+                  onChange={(selectedOptions) =>
+                    handleMultiSelectChange(
+                      "classes",
+                      selectedOptions as { value: string; label: string }[]
+                    )
+                  }
+                />
+                </div>
+                <div className="w-full">
+        <label className="text-xs text-gray-500">Sections</label>
+        <ReactSelect
+                  isMulti
+                  name='sections'
+                  options={listOptions}
+                  className="basic-multi-select custom-select"
+                  classNamePrefix="select"
+                  onChange={(selectedOptions) =>
+                    handleMultiSelectChange(
+                      "sections",
+                      selectedOptions as { value: string; label: string }[]
+                    )
+                  }
+                />
+                </div>
+                <div className="w-full">
+        <label className="text-xs text-gray-500">Subjects</label>
+        <ReactSelect
+                  isMulti
+                  name='subjects'
+                  options={listOptions}
+                  className="basic-multi-select custom-select"
+                  classNamePrefix="select"
+                  onChange={(selectedOptions) =>
+                    handleMultiSelectChange(
+                      "subjects",
+                      selectedOptions as { value: string; label: string }[]
+                    )
+                  }
+                />
+                </div>
+                <div className="w-full">
+      <label className="text-xs text-gray-500">Class Incharge</label>
+      <Select
+        options={listOptions}
+        onChange={handleSelectChange}
+        placeholder="Select..."
+        className="w-full"
+      />
+    </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4 justify-center">
-          <label
-            className="text-xs text-gray-500 flex items-center gap-2 cursor-pointer"
-            htmlFor="img"
-          >
-            <Image src="/upload.png" alt="" width={28} height={28} />
-            <span>Upload a photo</span>
-          </label>
+        
           <input type="file" id="img" {...register("img")} className="hidden" />
           {errors.img?.message && (
             <p className="text-xs text-red-400">
@@ -155,7 +239,7 @@ const TeacherForm = ({
           )}
         </div>
       </div>
-      <button className="bg-blue-400 text-white p-2 rounded-md">
+      <button className="bg-[#FAE27C] p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>

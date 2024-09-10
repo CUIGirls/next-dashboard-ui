@@ -2,6 +2,7 @@ import Menu from "@/components/Menu";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 
 export default function DashboardLayout({
   children,
@@ -24,6 +25,10 @@ export default function DashboardLayout({
       {/* RIGHT */}
       <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-scroll flex flex-col">
         <Navbar />
+        <Script
+          src="https://upload-widget.cloudinary.com/global/all.js"
+          strategy="beforeInteractive"
+        />
         {children}
       </div>
     </div>
