@@ -1,17 +1,87 @@
+'use client'
+
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { classesData, role } from "@/lib/data";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react"; 
+import { useState } from "react";
 
-type Class = {
+interface Section {
+  id: number;
+  name: string;
+  ClassIncharge: string;
+}
+
+interface Class {
   id: number;
   name: string;
   capacity: number;
-  grade: number;
-  supervisor: string;
-};
+  ClassIncharge: string;
+  sections: Section[];
+}
+
+const classes = [
+  { 
+    id: 1, 
+    name: "Playgroup", 
+    capacity: 20, 
+    ClassIncharge: "Ms. A", 
+    sections: [
+      { id: 1, name: "Section A", ClassIncharge: "Mr. X" },
+      { id: 2, name: "Section B", ClassIncharge: "Ms. Y" },
+      { id: 3, name: "Section C", ClassIncharge: "Mr. Z" }
+    ]
+  },
+  { 
+    id: 2, 
+    name: "Class 1", 
+    capacity: 25, 
+    ClassIncharge: "Ms. B", 
+    sections: [
+      { id: 1, name: "Section A", ClassIncharge: "Ms. P" },
+      { id: 2, name: "Section B", ClassIncharge: "Ms. Q" },
+      { id: 3, name: "Section C", ClassIncharge: "Mr. R" }
+    ]
+  },
+  { 
+    id: 3, 
+    name: "Class 2", 
+    capacity: 30, 
+    ClassIncharge: "Mr. C", 
+    sections: [
+      { id: 1, name: "Section A", ClassIncharge: "Ms. U" },
+      { id: 2, name: "Section B", ClassIncharge: "Mr. V" },
+      { id: 3, name: "Section C", ClassIncharge: "Ms. W" }
+    ]
+  },
+  { 
+    id: 4, 
+    name: "Class 3", 
+    capacity: 28, 
+    ClassIncharge: "Ms. D", 
+    sections: [
+      { id: 1, name: "Section A", ClassIncharge: "Mr. M" },
+      { id: 2, name: "Section B", ClassIncharge: "Ms. N" },
+      { id: 3, name: "Section C", ClassIncharge: "Mr. O" }
+    ]
+  },
+  { 
+    id: 5, 
+    name: "Class 4", 
+    capacity: 24, 
+    ClassIncharge: "Ms. E", 
+    sections: [
+      { id: 1, name: "Section A", ClassIncharge: "Ms. K" },
+      { id: 2, name: "Section B", ClassIncharge: "Mr. L" },
+      { id: 3, name: "Section C", ClassIncharge: "Ms. M" }
+    ]
+  }
+];
+
 
 const columns = [
   {
@@ -24,13 +94,8 @@ const columns = [
     className: "hidden md:table-cell",
   },
   {
-    header: "Grade",
-    accessor: "grade",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Supervisor",
-    accessor: "supervisor",
+    header: "ClassIncharge",
+    accessor: "ClassIncharge",
     className: "hidden md:table-cell",
   },
   {
@@ -40,25 +105,53 @@ const columns = [
 ];
 
 const ClassListPage = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+
+  const handleClassView = (sectionId: number) => {
+    router.push(`/list/students`);
+  };
+
   const renderRow = (item: Class) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight relative"
+      onMouseEnter={() => setOpenDropdown(item.id)}
+      onMouseLeave={() => setOpenDropdown(null)}
     >
       <td className="flex items-center gap-4 p-4">{item.name}</td>
       <td className="hidden md:table-cell">{item.capacity}</td>
-      <td className="hidden md:table-cell">{item.grade}</td>
-      <td className="hidden md:table-cell">{item.supervisor}</td>
+      <td className="hidden md:table-cell">{item.ClassIncharge}</td>
       <td>
         <div className="flex items-center gap-2">
-          {role === "admin" && (
-            <>
-              <FormModal table="class" type="update" data={item} />
-              <FormModal table="class" type="delete" id={item.id} />
-            </>
-          )}
+          <button
+            onClick={() => handleClassView(item.id)}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaPurpleLight text-white"
+          >
+            <Image src="/view.png" alt="View" width={14} height={14} />
+          </button>
         </div>
       </td>
+
+      {/* Dropdown for sections */}
+      {openDropdown === item.id && (
+        <td colSpan={4} className="absolute left-0 right-0 top-full bg-white border mt-1 z-10">
+          <div className="p-2">
+            <h3 className="text-sm font-semibold mb-2">Sections</h3>
+            {item.sections.map((section) => (
+              <div
+                key={section.id}
+                className="py-2 px-4 odd:hover:bg-lamaYellowLight even:hover:bg-lamaPurpleLight cursor-pointer "
+                onClick={() => handleClassView(section.id)}
+              >
+                <p>{section.name}</p>
+                <p className="text-xs text-gray-500">Incharge: {section.ClassIncharge}</p>
+              </div>
+            ))}
+          </div>
+        </td>
+      )}
     </tr>
   );
 
@@ -71,19 +164,24 @@ const ClassListPage = () => {
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="" width={14} height={14} />
+              <Image src="/filter.png" alt="Filter" width={14} height={14} />
             </button>
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="" width={14} height={14} />
+              <Image src="/sort.png" alt="Sort" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModal table="class" type="create" />}
           </div>
         </div>
       </div>
+
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={classesData} />
-      {/* PAGINATION */}
-      <Pagination />
+      <Table columns={columns} renderRow={renderRow} data={classes} />
+
+      {/* Loading spinner */}
+      {loading && (
+        <div className="flex items-center justify-center mt-6">
+          <Loader className="animate-spin h-12 w-12 text-blue-600" />
+        </div>
+      )}
     </div>
   );
 };

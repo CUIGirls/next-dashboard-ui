@@ -32,8 +32,12 @@ const schema = z.object({
   sex: z.enum(["male", "female"], { message: "Sex is required!" }),
   img: z.instanceof(File, { message: "Image is required" }),
 });
-const handleSelectChange = (name: string, value: string) => {
-  console.log(name, value);
+const handleSelectChange = (
+  selectedOption: { value: string; label: string } | null
+) => {
+  if (selectedOption) {
+    console.log(selectedOption.value);
+  }
 };
 
 type Inputs = z.infer<typeof schema>;
@@ -161,7 +165,9 @@ const StudentForm = ({
       <label className="text-xs text-gray-500">Class</label>
       <Select
         options={listOptions}
-        onChange={handleSelectChange}
+        onChange={(selectedOption) =>
+          handleSelectChange(selectedOption as { value: string; label: string } | null)
+        }
         placeholder="Select..."
         className="w-full"
       />
