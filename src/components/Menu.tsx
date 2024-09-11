@@ -91,7 +91,7 @@ const Menu = () => {
   useEffect(() => {
     // Set the role when the component mounts
     const userRole = getRole();
-    setRole("admin");
+    setRole(userRole);
   }, []);
 
   return (
