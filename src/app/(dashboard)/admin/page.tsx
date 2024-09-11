@@ -1,12 +1,14 @@
+'use client'
+
 import Announcements from "@/components/Announcements";
 import AttendanceChart from "@/components/AttendanceChart";
 import CountChart from "@/components/CountChart";
 import EventCalendar from "@/components/EventCalendar";
 import FinanceChart from "@/components/FinanceChart";
-import { withAuth } from "@/components/isAuth";
+import  withAuth  from "@/components/isAuth";
 import UserCard from "@/components/UserCard";
 
-const AdminPage = () => {
+const Admin = () => {
   const year = new Date().getFullYear();
   return (
     <div className="p-4 h-80 flex gap-4 flex-col md:flex-row">
@@ -41,4 +43,4 @@ const AdminPage = () => {
   );
 };
 
-export default withAuth(AdminPage, {roles: ["admin"]});
+export default withAuth(Admin, { roles: ["admin"] });

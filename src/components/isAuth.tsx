@@ -9,7 +9,7 @@ interface WithAuthOptions {
   roles?: string[]; // Roles allowed to access the page
 }
 
-export function withAuth(WrappedComponent: React.FC, options: WithAuthOptions = {}) {
+export default function withAuth(WrappedComponent: React.FC, options: WithAuthOptions = {}) {
   return function AuthenticatedComponent(props: any) {
     const { roles = [] } = options;
     const router = useRouter();
