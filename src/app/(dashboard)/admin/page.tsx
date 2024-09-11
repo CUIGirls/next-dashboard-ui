@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Announcements from "@/components/Announcements";
 import AttendanceChart from "@/components/AttendanceChart";
@@ -6,21 +6,17 @@ import CountChart from "@/components/CountChart";
 import EventCalendar from "@/components/EventCalendar";
 import FinanceChart from "@/components/FinanceChart";
 import UserCard from "@/components/UserCard";
-import React, { FormEvent } from 'react';
+import React, { FormEvent } from "react";
 import { withAuth } from "@/components/isAuth";
 
 const AdminPage = () => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
 
-const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
-  event.preventDefault();
-  
-  const petName = (event.currentTarget.petName as HTMLInputElement).value;
-  const ownerName = (event.currentTarget.ownerName as HTMLInputElement).value;
+    const petName = (event.currentTarget.petName as HTMLInputElement).value;
+    const ownerName = (event.currentTarget.ownerName as HTMLInputElement).value;
+  };
 
-
-};
-
-  
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row">
       {/* LEFT */}
@@ -51,10 +47,10 @@ const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
       {/* RIGHT */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
         <EventCalendar />
-        <Announcements/>
+        <Announcements />
       </div>
     </div>
   );
 };
 
-export default withAuth(AdminPage, { roles: ['admin'] });
+export default AdminPage;
