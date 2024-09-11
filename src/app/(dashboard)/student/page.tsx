@@ -3,7 +3,7 @@
 import Announcements from "@/components/Announcements";
 import BigCalendar from "@/components/BigCalender";
 import EventCalendar from "@/components/EventCalendar";
-import { withAuth } from "@/components/isAuth";
+import withAuth from "@/components/isAuth";
 
 const StudentPage = () => {
   return (
