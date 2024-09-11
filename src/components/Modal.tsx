@@ -66,7 +66,7 @@ export function Modal({ isOpen, onClose, onApply }: ModalProps) {
           <div className="flex justify-end mt-8">
             <Button
               onClick={apply}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200"
+              className="px-6 py-3 bg-lamaYellow rounded-lg hover:bg-lamaYellowLight transition-all duration-200"
             >
               Apply
             </Button>
