@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Announcements from "@/components/Announcements";
 import AttendanceChart from "@/components/AttendanceChart";

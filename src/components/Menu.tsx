@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { jwtDecode } from 'jwt-decode'; // Correctly import jwtDecode
-import { useEffect, useState } from 'react';
-
+import Image from "next/image";
+import Link from "next/link";
+import { jwtDecode } from "jwt-decode"; // Correctly import jwtDecode
+import { useEffect, useState } from "react";
 // Function to get the role from JWT token in local storage
 const getRole = () => {
-  const token = localStorage.getItem('jwtToken');
-  
+  const token = localStorage.getItem("jwtToken");
+
   if (!token) {
     return null; // Return null if no token is found
   }
@@ -17,7 +16,7 @@ const getRole = () => {
     const decoded: { role: string } = jwtDecode(token); // Decode the JWT token
     return decoded.role; // Return the role from the token
   } catch (error) {
-    console.error('Failed to decode JWT token:', error);
+    console.error("Failed to decode JWT token:", error);
     return null;
   }
 };
@@ -91,7 +90,7 @@ const Menu = () => {
   useEffect(() => {
     // Set the role when the component mounts
     const userRole = getRole();
-    setRole(userRole);
+    setRole("admin");
   }, []);
 
   return (
