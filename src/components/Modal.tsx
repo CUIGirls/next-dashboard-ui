@@ -6,10 +6,15 @@ import { Select, SelectItem } from "@/components/UI/Select"; // Shadcn select
 const sessions = ["2023", "2024", "2025"];
 const sections = ["Section A", "Section B", "Section C"];
 
+interface Filters {
+  session: string | null;
+  section: string | null;
+}
+
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onApply: (session: string | null, section: string | null) => void;
+    onApply: (filter: Filters) => void;
 }
 
 
@@ -19,7 +24,7 @@ export function Modal({ isOpen, onClose, onApply }: ModalProps) {
   const router = useRouter();
 
   const apply = () => {
-    onApply(selectedSession, selectedSection); // Pass the selected values back to parent
+    onApply({ session: selectedSession, section: selectedSection }); // Pass the selected values back to parent
     setTimeout(() => {
       onClose(); // Close the modal after a brief delay (for spinner)
     }, 2000); // Simulate delay for loading spinner
